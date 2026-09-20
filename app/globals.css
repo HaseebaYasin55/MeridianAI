@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--background: 0 0% 100%;
+		--foreground: 0 0% 0%;
+		--card: 0 0% 100%;
+		--card-foreground: 0 0% 0%;
+		--popover: 0 0% 100%;
+		--popover-foreground: 0 0% 0%;
+		--primary: 210 23% 28%; /* 384959 */
+		--primary-foreground: 0 0% 100%;
+		--secondary: 210 92% 86%; /* BDDDFC */
+		--secondary-foreground: 210 23% 28%;
+		--muted: 210 90% 90%;
+		--muted-foreground: 210 10% 42%;
+		--accent: 210 90% 88%;
+		--accent-foreground: 210 23% 28%;
+		--destructive: 0 72% 50%;
+		--destructive-foreground: 0 0% 100%;
+		--border: 210 22% 90%;
+		--input: 210 22% 90%;
+		--ring: 210 80% 74%; /* 88BDF2 */
+		--brand: 210 26% 53%; /* 6A89A7 */
+		--brand-foreground: 0 0% 100%;
+		--radius: 0.625rem;
+	}
+
+	.dark {
+		--background: 0 0% 0%;
+		--foreground: 0 0% 100%;
+		--card: 0 0% 0%;
+		--card-foreground: 0 0% 100%;
+		--popover: 0 0% 4%;
+		--popover-foreground: 0 0% 100%;
+		--primary: 210 80% 74%; /* 88BDF2 */
+		--primary-foreground: 210 23% 28%;
+		--secondary: 210 24% 16%;
+		--secondary-foreground: 0 0% 100%;
+		--muted: 210 20% 12%;
+		--muted-foreground: 210 12% 68%;
+		--accent: 210 28% 20%;
+		--accent-foreground: 0 0% 100%;
+		--destructive: 2 70% 54%;
+		--destructive-foreground: 0 0% 100%;
+		--border: 210 14% 18%;
+		--input: 210 14% 18%;
+		--ring: 210 80% 74%; /* 88BDF2 */
+		--brand: 210 80% 74%; /* 88BDF2 */
+		--brand-foreground: 210 23% 28%;
+	}
+}
+
+@layer base {
+	* {
+		@apply border-border;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		@apply bg-background font-sans text-foreground antialiased;
+		font-feature-settings:
+			"ss01",
+			"cv01",
+			"cv11";
+		/* Prevent any stray element from forcing a horizontal page scroll on
+		   small screens while letting inner containers (code blocks, etc.)
+		   keep their own overflow scrolling. */
+		overflow-x: clip;
+	}
+
+	::selection {
+		background: hsl(var(--brand) / 0.22);
+	}
+}
+
+@layer utilities {
+	.font-display {
+		font-family: theme("fontFamily.display");
+		font-style: italic;
+		letter-spacing: -0.01em;
+		font-variation-settings: "opsz" 48;
+	}
+
+	.eyebrow {
+		@apply font-mono text-[11px] uppercase tracking-[0.22em] text-muted-foreground;
+	}
+
+	.hairline {
+		background: hsl(var(--border));
+		height: 1px;
+	}
+
+	.focus-ring {
+		outline: none;
+	}
+	.focus-ring:focus-visible {
+		box-shadow: 0 0 0 1px hsl(var(--background)),
+			0 0 0 3px hsl(var(--ring) / 0.55);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
