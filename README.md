@@ -1,224 +1,142 @@
-# Meridian
+# Meridian AI
 
-A focused AI workspace built with **Next.js, Supabase, PostgreSQL, and Groq API**. Users authenticate, receive credits, and spend **1 credit per AI message**. Conversations persist between visits.
+Meridian is a focused AI workspace for clear, persistent thinking. Ask anything in plain language and get structured, markdown-rendered answers — lists and code blocks included — then pick up exactly where you left off, because every conversation is saved to your account. It is built on Next.js, uses Supabase for authentication and storage on Postgres, and calls Groq through a server-only route that keeps the API key out of the browser.
 
 ## Features
 
-* Supabase email authentication
-* Protected chatbot and dashboard pages
-* Credit-based AI usage
-* Atomic credit deduction with PostgreSQL RPC
-* Groq AI integration
-* Server-side API key protection
-* Persistent chat history
-* Real-time credit balance updates
-* Row Level Security (RLS)
-* Responsive, calm AI workspace UI
-* Markdown-rendered answers with copyable code blocks
-* Clear thread functionality
+- **Email / password authentication** via Supabase Auth (email confirmation, password reset, session refresh).
+- **Persistent chat workspace** — every user and assistant message is saved to your account and reloaded on return.
+- **Markdown answers** with rendered headings, lists, quotes, and code blocks with a copy-to-clipboard button.
+- **Credit system** — new accounts start with 10 credits, one message costs one credit, and the balance refreshes automatically when depleted.
+- **Dashboard** — credit balance, recent activity, account details, and a quick path back into the workspace.
+- **Responsive UI** — mobile, tablet, and desktop layouts with light/dark/system theming.
 
 ## Tech Stack
 
-* **Next.js** — App Router
-* **React + TypeScript**
-* **Tailwind CSS**
-* **Supabase Auth**
-* **Supabase PostgreSQL**
-* **PostgreSQL RPC**
-* **Groq API**
-* **shadcn/ui**
+- **Next.js 16** (App Router) with React 19 and TypeScript
+- **Tailwind CSS 3** with shadcn/ui-style Radix components (Button, Card, Input, DropdownMenu, etc.)
+- **Supabase** (`@supabase/ssr`, `@supabase/supabase-js`) for auth and Postgres with Row Level Security
+- **Groq API** (OpenAI-compatible chat completions) via a server route
+- Supporting: `next-themes`, `lucide-react`, `class-variance-authority`, `tailwind-merge`, `clsx`
 
 ## Project Structure
 
-```text
-meridian/
+```
 ├── app/
 │   ├── api/
-│   │   ├── chat/route.ts
-│   │   └── credits/route.ts
-│   ├── auth/
-│   ├── chatbot/
-│   │   ├── chat-interface.tsx
-│   │   └── page.tsx
-│   ├── protected/
-│   ├── globals.css
-│   ├── layout.tsx
-│   └── page.tsx
+│   │   ├── chat/route.ts            # POST /api/chat — history, Groq call, credit deduction
+│   │   └── credits/route.ts         # GET /api/credits — current credit balance
+│   ├── auth/                        # login, sign-up, forgot/update password, confirm, error, success
+│   ├── chatbot/                     # chat workspace (page.tsx + chat-interface.tsx)
+│   ├── protected/                   # dashboard (layout.tsx + page.tsx)
+│   ├── globals.css                  # design tokens (palette, typography, utilities)
+│   ├── layout.tsx                   # root layout, fonts, theme provider
+│   └── page.tsx                     # public landing page
 ├── components/
-│   ├── brand/
-│   ├── auth/
-│   └── ui/
+│   ├── auth/auth-shell.tsx          # auth page shell layout
+│   ├── brand/wordmark.tsx           # Meridian logo/glyph
+│   ├── ui/                          # shadcn-style primitives (button, card, input, ...)
+│   ├── code-block.tsx               # code rendering with copy button
+│   ├── markdown.tsx                 # lightweight markdown renderer
+│   ├── product-preview.tsx          # landing-page product mockup
+│   ├── login-form.tsx / sign-up-form.tsx / forgot-password-form.tsx / update-password-form.tsx
+│   ├── header-actions.tsx / logout-button.tsx / theme-switcher.tsx
+│   └── site-header.tsx / site-footer.tsx
 ├── lib/
-│   ├── credits.ts
-│   └── supabase/
-├── supabase/
-│   └── migrations/
-│       └── 001_create_credits.sql
-├── .env.local
-├── package.json
-└── README.md
+│   ├── supabase/                    # client.ts, server.ts, proxy.ts (session middleware)
+│   ├── brand.ts                     # brand copy, tagline, starter prompts
+│   ├── credits.ts                   # auth + get/decrement credit helpers (RPC wrappers)
+│   ├── datetime.ts                  # timeAgo helper
+│   └── utils.ts                     # cn() class merger
+├── supabase/migrations/             # 001_create_credits.sql, 002_grant_message_access.sql
+├── .env.example
+├── next.config.ts
+├── tailwind.config.ts
+└── package.json
 ```
-
-## Core Architecture
-
-### Authentication
-
-Supabase Auth manages signup, login, sessions, and password recovery. Protected pages and API routes verify the authenticated user server-side.
-
-### Credit System
-
-Each user has a record in the `credits` table.
-
-```text
-New user
-   ↓
-Credit record created
-   ↓
-User sends message
-   ↓
-Check credits
-   ↓
-Deduct 1 credit atomically
-   ↓
-Generate AI response
-```
-
-Credit deduction uses a PostgreSQL RPC function to prevent race conditions from simultaneous requests.
-
-### Chat Flow
-
-```text
-User
- ↓
-/api/chat
- ↓
-Authenticate user
- ↓
-Check credits
- ↓
-Get conversation history
- ↓
-Call Groq
- ↓
-Save messages
- ↓
-Return AI response + credits
- ↓
-Update chat UI
-```
-
-### Security
-
-Sensitive operations remain server-side:
-
-* Groq API key is stored in `.env.local`
-* Authentication is verified on the server
-* Credits cannot be directly modified by users
-* Database access is protected with RLS
-* Credit deduction uses an atomic PostgreSQL function
-
-## Database
-
-### `credits`
-
-Stores user credit balances.
-
-Main fields:
-
-* `id`
-* `user_id`
-* `user_email`
-* `credits_count`
-* `reset_at`
-* `updated_at`
-
-### `messages`
-
-Stores conversation history.
-
-Main fields:
-
-* `id`
-* `user_id`
-* `role`
-* `content`
-* `created_at`
-
-Users can only access their own records through RLS policies.
 
 ## Environment Variables
 
-Create `.env.local`:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
-GROQ_API_KEY=your_groq_api_key
-```
-
-Never expose `GROQ_API_KEY` in client-side code.
-
-## Setup
-
-### 1. Install dependencies
+Copy `.env.example` to `.env` and fill in the values:
 
 ```bash
+# Supabase project settings > API (https://supabase.com/dashboard/project/_/settings/api)
+NEXT_PUBLIC_SUPABASE_URL=your-project-url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-publishable-or-anon-key
+
+# Groq (https://console.groq.com/keys) — server-side only
+GROQ_API_KEY=your-groq-api-key
+```
+
+| Variable | Public | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes (safe to expose) | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Yes (anon key, intended for clients) | Supabase anon/publishable key |
+| `GROQ_API_KEY` | **No — server only** | Groq API key used in `app/api/chat/route.ts` |
+
+## Supabase Setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. In the **SQL Editor**, run the migrations in order:
+   - `supabase/migrations/001_create_credits.sql` — creates `credits` and `messages` tables, RLS policies, credit RPC functions, and the new-user credits trigger.
+   - `supabase/migrations/002_grant_message_access.sql` — grants `SELECT, INSERT` on `messages` to the `authenticated` role.
+3. Confirm **Email** provider is enabled in Authentication so confirmation links and password resets work.
+4. Copy the project URL and anon/publishable key into `.env`.
+
+Supabase is used for: user authentication (sessions, email confirmation, password reset), and the Postgres database that stores credits and chat messages behind Row Level Security (RLS policies restrict each row to its owner, and credit mutations run through `SECURITY DEFINER` RPC functions).
+
+## Groq Setup
+
+1. Create an API key at [console.groq.com/keys](https://console.groq.com/keys).
+2. Set `GROQ_API_KEY` in `.env`.
+3. The chat route calls Groq's OpenAI-compatible endpoint (`https://api.groq.com/openai/v1/chat/completions`) with the `openai/gpt-oss-120b` model, a 60s timeout, and one retry on transient failures.
+
+The key is read only inside the server route and is never exposed to the client.
+
+## Installation & Local Development
+
+```bash
+# 1. Install dependencies
 npm install
-```
 
-### 2. Configure Supabase
+# 2. Configure environment
+cp .env.example .env
+#   then fill in your Supabase and Groq values
 
-Create a Supabase project and add the required environment variables.
-
-### 3. Run the database migration
-
-Run:
-
-```text
-supabase/migrations/001_create_credits.sql
-```
-
-in the Supabase SQL Editor.
-
-### 4. Start the application
-
-```bash
+# 3. Start the dev server (http://localhost:3000)
 npm run dev
 ```
 
-Open:
+Available scripts:
 
-```text
-http://localhost:3000
+```bash
+npm run dev     # Next.js dev server (add `-- -p <port>` to change the port)
+npm run lint    # ESLint
+npm run build   # production build
+npm start       # run the production build
 ```
 
-## Testing
+## Production Build
 
-Verify:
+```bash
+npm run build
+npm start
+```
 
-* User signup/login works
-* Protected routes redirect unauthenticated users
-* New users receive credits
-* Sending a message consumes 1 credit
-* Groq returns a response
-* Chat history is saved
-* Credits update in the UI
-* Zero-credit users cannot send messages
-* Clear Thread removes the visible conversation
+Deploy on any Node.js platform (e.g. Vercel after setting the same environment variables in the platform's dashboard).
 
-## Main Files
+## Security Notes
 
-| File                                         | Purpose                                                    |
-| -------------------------------------------- | ---------------------------------------------------------- |
-| `app/chatbot/page.tsx`                       | Protected chatbot page                                     |
-| `app/chatbot/chat-interface.tsx`             | Chat UI and client-side state                              |
-| `app/api/chat/route.ts`                      | Authentication, Groq calls, credits, and message storage |
-| `app/api/credits/route.ts`                   | Returns current credit balance                             |
-| `lib/credits.ts`                             | Authentication and credit helpers                          |
-| `lib/supabase/server.ts`                     | Server-side Supabase client                                |
-| `lib/supabase/client.ts`                     | Browser Supabase client                                    |
-| `supabase/migrations/001_create_credits.sql` | Database tables, RLS, triggers, and RPC functions          |
+- `.env` is gitignored and must **never be committed**. All files matching `.env*.local` are ignored too.
+- `GROQ_API_KEY` is read server-side only; never expose it in client components or `NEXT_PUBLIC_*` variables.
+- `NEXT_PUBLIC_*` variables are publicly visible in the browser bundle by design — never put secrets there.
+- The database relies on Row Level Security: every RLS policy scopes queries to the authenticated user's own rows, and `messages` grants are limited to the minimum (`SELECT`, `INSERT`).
+- Treat any API key pushed to Git as compromised — rotate it immediately.
 
-## Summary
+## Live Demo
 
-**Meridian** is a secure full-stack AI workspace where authenticated users receive limited credits and spend one credit per AI message. Next.js handles the application, Supabase manages authentication and data, PostgreSQL provides atomic credit operations, and Groq generates AI responses.
+Live Project: [Add live link here]
+
+## Author
+
+Haseeba Yasin

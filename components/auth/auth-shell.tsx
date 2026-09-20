@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { Check } from "lucide-react";
 
 import { Wordmark } from "@/components/brand/wordmark";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const facts = [
 	"Conversations persist between visits",
@@ -57,7 +56,6 @@ export function AuthShell({
 						<Wordmark href="/" />
 					</div>
 					<div className="flex items-center gap-3">
-						<ThemeSwitcher />
 						<Wordmark href="/" className="hidden lg:flex" size="md" />
 					</div>
 				</div>

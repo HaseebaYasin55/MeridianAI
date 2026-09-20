@@ -106,39 +106,7 @@ export default function Home() {
 					</div>
 				</section>
 
-				{/* CTA */}
-				<section id="start" className="scroll-mt-24">
-					<div className="mx-auto max-w-6xl px-5 pb-24 sm:px-8">
-						<div className="relative overflow-hidden rounded-xl border border-border bg-card px-6 py-16 text-center sm:px-12 sm:py-20">
-							<div className="relative">
-								<p className="eyebrow mb-4">Get started</p>
-								<h2 className="mx-auto max-w-2xl text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-5xl">
-									Start thinking in{" "}
-									<em className="font-display text-brand">
-										Meridian.
-									</em>
-								</h2>
-								<p className="mx-auto mt-4 max-w-md text-[15px] leading-7 text-muted-foreground">
-									Create an account and make your first saved
-									conversation in under a minute. No card, no
-									commitment — just credits.
-								</p>
-								<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-									<Button asChild size="xl">
-										<Link href="/auth/sign-up">
-											Create your account
-											<ArrowRight className="h-4 w-4" />
-										</Link>
-									</Button>
-									<Button asChild size="xl" variant="ghost">
-										<Link href="/auth/login">Sign in</Link>
-									</Button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-			</main>
+				</main>
 
 			<SiteFooter />
 		</div>

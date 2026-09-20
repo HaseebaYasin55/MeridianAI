@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { Wordmark } from "@/components/brand/wordmark";
 import { HeaderActions } from "@/components/header-actions";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function ProtectedLayout({
 	children,
@@ -29,7 +28,6 @@ export default function ProtectedLayout({
 						</nav>
 					</div>
 					<div className="flex items-center gap-1.5">
-						<ThemeSwitcher />
 						<HeaderActions />
 					</div>
 				</div>

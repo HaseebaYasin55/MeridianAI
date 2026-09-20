@@ -2,11 +2,9 @@ import Link from "next/link";
 
 import { Wordmark } from "@/components/brand/wordmark";
 import { HeaderActions } from "@/components/header-actions";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 const navLinks = [
 	{ href: "#how", label: "How it works" },
-	{ href: "#start", label: "Get started" },
 ];
 
 export function SiteHeader() {
@@ -27,7 +25,6 @@ export function SiteHeader() {
 					</nav>
 				</div>
 				<div className="flex items-center gap-1.5">
-					<ThemeSwitcher />
 					<HeaderActions />
 				</div>
 			</div>
