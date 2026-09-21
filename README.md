@@ -1,6 +1,6 @@
 # Meridian AI
 
-Meridian is a focused AI workspace for clear, persistent thinking. Ask anything in plain language and get structured, markdown-rendered answers — lists and code blocks included — then pick up exactly where you left off, because every conversation is saved to your account. It is built on Next.js, uses Supabase for authentication and storage on Postgres, and calls Groq through a server-only route that keeps the API key out of the browser.
+Meridian AI is a focused AI workspace built for clear, persistent thinking. Ask questions in plain language and get structured, Markdown-rendered responses with support for lists and code blocks. Every conversation is securely saved to your account, so you can return to previous discussions and continue exactly where you left off. Built with Next.js and Supabase, Meridian AI uses PostgreSQL for persistent data and authentication, while Groq powers the AI responses through a server-side route that keeps the API key securely out of the browser.
 
 ## Features
 
@@ -135,8 +135,8 @@ Deploy on any Node.js platform (e.g. Vercel after setting the same environment v
 
 ## Live Demo
 
-Live Project: [Add live link here]
+Live Project: [Meridian AI](https://meridian-ai-sepia.vercel.app/)
 
 ## Author
 
-Haseeba Yasin
+ Haseeba Yasin
